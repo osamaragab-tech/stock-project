@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}📦 {% trans "LOGIN" %}{% endblock %}
+
+{% block extra_head %}
+
+<style>
+        body {
+            background: #f0f2f5;
+            font-family: Arial, sans-serif;
+        }
+        .auth-container {
+            max-width: 400px;
+            margin: 80px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+        .auth-container h2 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .auth-container input {
+            margin-bottom: 15px;
+        }
+        .auth-container button {
+            width: 100%;
+        }
+        .auth-container a {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="auth-container">
+        <h2>{% trans "Login" %}</h2>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="">
+            {% csrf_token %}
+            <input type="text" name="username" class="form-control" placeholder="{% trans 'Username' %}" required>
+            <input type="password" name="password" class="form-control" placeholder="{% trans 'Password' %}" required>
+            <button type="submit" class="btn btn-primary mt-2">{% trans "Login" %}</button>
+        </form>
+        <a href="{% url 'accounts:signup' %}">{% trans "Don't have an account? Sign Up" %}</a>
+    </div>
+{% endblock %}
+

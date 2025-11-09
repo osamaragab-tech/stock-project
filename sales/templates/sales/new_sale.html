@@ -1,0 +1,157 @@
+{% extends "sales/base_sales.html" %}
+{% load i18n static %}
+
+{% block sales_content %}
+<h2 class="mb-4 text-primary fw-bold">{% trans "Create New Invoice" %}</h2>
+
+<form method="post" id="invoiceForm">
+  {% csrf_token %}
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">{% trans "Customer Name" %}</label>
+      <input type="text" name="customer_name" class="form-control" placeholder="{% trans 'Optional' %}">
+    </div>
+
+    <!-- Barcode Input -->
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">{% trans "Scan Barcode or Enter Manually" %}</label>
+      <div class="input-group">
+        <input type="text" id="barcodeInput" class="form-control" placeholder="{% trans 'Scan or type barcode here' %}">
+        <button type="button" id="barcodeAddBtn" class="btn btn-outline-primary">{% trans "Add" %}</button>
+      </div>
+    </div>
+  </div>
+
+  <table class="table table-bordered align-middle">
+    <thead class="table-primary text-center">
+      <tr>
+        <th>{% trans "Product" %}</th>
+        <th>{% trans "Price" %}</th>
+        <th>{% trans "Quantity" %}</th>
+        <th>{% trans "Subtotal" %}</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="productRows"></tbody>
+  </table>
+
+  <div class="d-flex justify-content-between align-items-center">
+    <button type="button" class="btn btn-outline-primary" id="addProduct">+ {% trans "Add Product" %}</button>
+    <h5 class="text-end">{% trans "Total:" %} <span id="total">0</span> EGP</h5>
+  </div>
+
+  <button type="submit" class="btn btn-success w-100 mt-4">{% trans "Save Invoice" %}</button>
+</form>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+$(function(){
+  const tbody = $('#productRows');
+  const totalEl = $('#total');
+
+  // ====== Function to create a product row ======
+  function createRow(product) {
+    const $row = $(`
+      <tr>
+        <td>
+          <select name="product_id" class="form-select product-select" required style="width:100%">
+            ${product ? `<option value="${product.id}" selected>${product.name} — ${product.sku}</option>` : ''}
+          </select>
+        </td>
+        <td><input type="number" step="0.01" name="price" class="form-control price-input" value="${product ? product.price : 0}" required></td>
+        <td><input type="number" name="quantity" class="form-control qty-input" value="1" min="1" ${product ? `max="${product.quantity}"` : ''} required></td>
+        <td class="subtotal text-center">0</td>
+        <td><button type="button" class="btn btn-danger btn-sm remove">✕</button></td>
+      </tr>
+    `);
+    tbody.append($row);
+
+    // init select2 on select
+    $row.find('.product-select').select2({
+      placeholder: "{% trans 'Search product by name or SKU...' %}",
+      minimumInputLength: 1,
+      ajax: {
+        url: "{% url 'sales:product_search' %}",
+        dataType: 'json',
+        delay: 250,
+        data: params => ({ q: params.term }),
+        processResults: data => ({
+          results: data.map(p => ({
+            id: p.id,
+            text: `${p.name} — ${p.sku} — ${p.price} EGP ({{ _('Stock') }}: ${p.quantity})`,
+            price: p.price,
+            quantity: p.quantity
+          }))
+        }),
+        cache: true
+      },
+      width: 'resolve',
+      allowClear: true
+    }).on('select2:select', function(e){
+      const d = e.params.data;
+      const $tr = $(this).closest('tr');
+      $tr.find('input.price-input').val(d.price);
+      $tr.find('input.qty-input').attr('max', d.quantity);
+      updateTotals();
+    });
+
+    updateTotals();
+  }
+
+  // ====== Barcode handler ======
+  $('#barcodeAddBtn').on('click', function(){
+    const barcode = $('#barcodeInput').val().trim();
+    if(!barcode) return;
+
+    $.getJSON("{% url 'sales:product_search' %}", { q: barcode }, function(data){
+      if(data.length > 0) {
+        createRow(data[0]); // add first matched product
+        $('#barcodeInput').val('');
+      } else {
+        alert("{% trans 'No product found with that barcode or SKU.' %}");
+      }
+    });
+  });
+
+  $('#barcodeInput').on('keypress', function(e){
+    if(e.which === 13){ // Enter key
+      e.preventDefault();
+      $('#barcodeAddBtn').click();
+    }
+  });
+
+  // ====== Manual Add button ======
+  $('#addProduct').on('click', function(){
+    createRow();
+  });
+
+  // ====== Remove row ======
+  tbody.on('click', '.remove', function(){
+    $(this).closest('tr').remove();
+    updateTotals();
+  });
+
+  // ====== Recalculate totals ======
+  tbody.on('input change', 'input.price-input, input.qty-input', updateTotals);
+
+  function updateTotals(){
+    let total = 0;
+    tbody.find('tr').each(function(){
+      const qty = parseFloat($(this).find('.qty-input').val()) || 0;
+      const price = parseFloat($(this).find('.price-input').val()) || 0;
+      const subtotal = qty * price;
+      $(this).find('.subtotal').text(subtotal.toFixed(2));
+      total += subtotal;
+    });
+    totalEl.text(total.toFixed(2));
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>طباعة باركود - {{ product.name }}</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: 'Cairo', sans-serif;
+      margin-top: 40px;
+    }
+    img {
+      width: 220px;
+      height: auto;
+      margin-top: 10px;
+    }
+    .price {
+      margin-top: 5px;
+      font-weight: bold;
+      color: #222;
+    }
+    @media print {
+      body { margin: 0; }
+      button { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <h3>{{ product.name }}</h3>
+  <p class="price">{{ product.price }} ج.م</p>
+  <img src="/{{ barcode_path }}" alt="Barcode">
+  <p>{{ product.barcode }}</p>
+  <button onclick="window.print()">🖨️ طباعة</button>
+</body>
+</html>

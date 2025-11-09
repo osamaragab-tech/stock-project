@@ -1,0 +1,80 @@
+body {
+  font-family: 'Cairo', sans-serif;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+.navbar {
+  background: linear-gradient(90deg, #0d6efd, #004aad);
+}
+
+.navbar-brand {
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.sidebar {
+  background-color: #ffffff;
+  border-right: 1px solid #dee2e6;
+  min-height: 90vh;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+.sidebar h5 {
+  color: #0d6efd;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.sidebar a {
+  color: #333;
+  padding: 8px 12px;
+  border-radius: 6px;
+  display: block;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.sidebar a:hover, .sidebar a.active {
+  background-color: #0d6efd;
+  color: #fff;
+}
+
+.card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.table th {
+  background-color: #0d6efd;
+  color: #fff;
+  text-align: center;
+}
+
+.table td {
+  text-align: center;
+}
+
+.sidebar {
+  background-color: #ffffff;
+  border-right: 1px solid #ddd;
+  min-height: 100vh;
+}
+
+.sidebar .nav-link {
+  color: #333;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  transition: background-color 0.2s;
+}
+
+.sidebar .nav-link:hover {
+  background-color: #f0f0f0;
+}
+
+.sidebar .nav-link.active {
+  background-color: #007bff;
+  color: #fff !important;
+}

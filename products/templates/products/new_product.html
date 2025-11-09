@@ -1,0 +1,123 @@
+{% extends "products/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow-lg border-0 rounded-4">
+    <div class="card-header bg-primary text-white text-center rounded-top-4">
+      <h4 class="mb-0">{% trans "Add New Product" %}</h4>
+    </div>
+
+    <div class="card-body p-4 bg-light">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- رسائل التنبيهات -->
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} text-center fw-bold mb-3">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+
+        <div class="row g-3">
+
+          <!-- اسم المنتج -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">{% trans "Product Name" %}</label>
+            <input type="text" name="name" class="form-control" autocomplete="off"
+                   placeholder="{% trans 'Enter product name' %}" required
+                   value="{{ request.POST.name }}">
+          </div>
+
+          <!-- كود المنتج -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">{% trans "SKU" %}</label>
+            <input type="text" name="sku" class="form-control" autocomplete="off"
+                   placeholder="{% trans 'Unique product code' %}" required
+                   value="{{ request.POST.sku }}">
+          </div>
+
+          <!-- الفئة الأم -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">{% trans "Parent Category (optional)" %}</label>
+            <select name="parent_category" class="form-select">
+              <option value="">{% trans "No Parent (Main Category)" %}</option>
+              {% for id, name in categories %}
+                <option value="{{ id }}" {% if request.POST.parent_category == id|stringformat:"s" %}selected{% endif %}>{{ name }}</option>
+              {% endfor %}
+            </select>
+            <small class="text-muted">
+              {% trans "Choose a parent category if this is a subcategory, or leave empty for a main category." %}
+            </small>
+          </div>
+
+          <!-- الفئة -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">{% trans "Category Name" %}</label>
+            <input list="category-list" name="category_name" class="form-control"
+                   placeholder="{% trans 'Select or type new category' %}" autocomplete="off"
+                   value="{{ request.POST.category_name }}">
+            <datalist id="category-list">
+              {% for id, name in categories %}
+                <option value="{{ name }}"></option>
+              {% endfor %}
+            </datalist>
+            <small class="text-muted">{% trans "You can type a new category name manually if not listed." %}</small>
+          </div>
+
+          <!-- نوع المنتج -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">{% trans "Product Type" %}</label>
+            <select name="product_type" class="form-select" required>
+              <option value="inventory" {% if request.POST.product_type == "inventory" %}selected{% endif %}>
+                {% trans "Inventory Item" %}
+              </option>
+              <option value="notinventory" {% if request.POST.product_type == "notinventory" %}selected{% endif %}>
+                {% trans "Non-Inventory Item" %}
+              </option>
+              <option value="service" {% if request.POST.product_type == "service" %}selected{% endif %}>
+                {% trans "Service" %}
+              </option>
+            </select>
+          </div>
+
+          <!-- السعر -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">{% trans "Price" %}</label>
+            <input type="number" name="price" step="0.01" class="form-control"
+                   value="{{ request.POST.price }}" required>
+          </div>
+
+          <!-- الرصيد الافتتاحي -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">{% trans "Beginning Balance" %}</label>
+            <input type="number" name="beginning_balance" min="0" class="form-control"
+                   value="{{ request.POST.beginning_balance }}">
+          </div>
+
+          <!-- الصورة -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">{% trans "Image" %}</label>
+            <input type="file" name="image" class="form-control">
+          </div>
+
+          <!-- الوصف -->
+          <div class="col-12">
+            <label class="form-label fw-bold">{% trans "Description" %}</label>
+            <textarea name="description" class="form-control" rows="3">{{ request.POST.description }}</textarea>
+          </div>
+
+        </div>
+
+        <!-- زر الحفظ -->
+        <div class="text-center mt-4">
+          <button class="btn btn-success px-4 py-2 fw-bold shadow-sm rounded-pill">
+            💾 {% trans "Save Product" %}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

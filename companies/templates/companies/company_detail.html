@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<div class="container mt-5">
+  <h3 class="fw-bold mb-4">{{ company.name }}</h3>
+
+  <div class="mb-3">
+    <a href="{% url 'companies:new_branch' company.id %}" class="btn btn-primary">
+      ➕ {% trans "Add Branch" %}
+    </a>
+    <a href="{% url 'companies:set_active_company' company.id %}" class="btn btn-success">
+      ✅ {% trans "Set Active" %}
+    </a>
+  </div>
+
+  
+</div>
+{% endblock %}

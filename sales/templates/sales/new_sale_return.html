@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block content %}
+<h3 class="mb-4 text-primary">Create Sale Return</h3>
+
+<form method="post">
+  {% csrf_token %}
+  
+  <div class="mb-3">
+    <label class="form-label fw-semibold">Related Sale (optional)</label>
+    <select name="sale_id" class="form-select">
+      <option value="">-- None --</option>
+      {% for s in sales %}
+        <option value="{{ s.id }}">#{{ s.id }} — {{ s.customer_name }} — {{ s.date|date:"Y-m-d" }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <table class="table table-bordered align-middle text-center">
+    <thead class="table-primary">
+      <tr>
+        <th style="width:35%">Product</th>
+        <th style="width:15%">Price</th>
+        <th style="width:15%">Qty</th>
+        <th style="width:15%">Total</th>
+        <th style="width:10%"></th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+    <tfoot>
+      <tr class="table-secondary fw-bold">
+        <td colspan="3" class="text-end">Grand Total</td>
+        <td id="grandTotal">0.00</td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <button type="button" class="btn btn-outline-primary" id="addRow">+ Add Product</button>
+
+  <div class="mt-3">
+    <label class="form-label fw-semibold">Notes</label>
+    <textarea name="notes" class="form-control"></textarea>
+  </div>
+
+  <button class="btn btn-success mt-3 w-100">Save Return</button>
+</form>
+
+<!-- ✅ jQuery + Select2 -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const addBtn = document.getElementById('addRow');
+  const tbody = document.getElementById('rows');
+  const grandTotalEl = document.getElementById('grandTotal');
+
+  function initSelect2(selectElement) {
+    $(selectElement).select2({
+      placeholder: "Search product by name or SKU...",
+      allowClear: true,
+      width: '100%',
+      matcher: function(params, data) {
+        if ($.trim(params.term) === '') return data;
+        const term = params.term.toLowerCase();
+        const text = data.text.toLowerCase();
+        return text.includes(term) ? data : null;
+      }
+    });
+  }
+
+  function updateGrandTotal() {
+    let sum = 0;
+    tbody.querySelectorAll('.row-total').forEach(el => {
+      sum += parseFloat(el.textContent) || 0;
+    });
+    grandTotalEl.textContent = sum.toFixed(2);
+  }
+
+  function addRow() {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <select name="product_id" class="form-select product-select" required>
+          <option value="">Choose</option>
+          {% for p in products %}
+            <option value="{{ p.id }}" data-price="{{ p.price }}">
+              {{ p.name }} (SKU: {{ p.sku }})
+            </option>
+          {% endfor %}
+        </select>
+      </td>
+      <td><input type="number" name="price" step="0.01" class="form-control price" required></td>
+      <td><input type="number" name="quantity" min="1" class="form-control qty" required></td>
+      <td class="row-total">0.00</td>
+      <td><button type="button" class="btn btn-sm btn-danger remove">✕</button></td>
+    `;
+    tbody.appendChild(tr);
+
+    const select = tr.querySelector('.product-select');
+    const priceInput = tr.querySelector('.price');
+    const qtyInput = tr.querySelector('.qty');
+    const totalCell = tr.querySelector('.row-total');
+
+    // ✅ تفعيل Live Search
+    initSelect2(select);
+
+    // ✅ لما يختار منتج
+    select.addEventListener('change', e => {
+      const opt = e.target.selectedOptions[0];
+      if (opt && opt.dataset.price) {
+        priceInput.value = opt.dataset.price;
+        qtyInput.value = 1;
+        totalCell.textContent = (opt.dataset.price * 1).toFixed(2);
+        updateGrandTotal();
+      }
+    });
+
+    // ✅ عند تغيير السعر أو الكمية
+    [priceInput, qtyInput].forEach(input => {
+      input.addEventListener('input', () => {
+        const price = parseFloat(priceInput.value) || 0;
+        const qty = parseFloat(qtyInput.value) || 0;
+        totalCell.textContent = (price * qty).toFixed(2);
+        updateGrandTotal();
+      });
+    });
+
+    // ✅ حذف الصف
+    tr.querySelector('.remove').addEventListener('click', () => {
+      tr.remove();
+      updateGrandTotal();
+    });
+  }
+
+  // أول صف تلقائيًا
+  addBtn.addEventListener('click', addRow);
+  addRow();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Products Module" %}{% endblock %}
+
+{% block content %}
+<div class="row">
+  <!-- Sidebar -->
+  <div class="col-md-3 col-lg-2 sidebar p-3 bg-white border-end shadow-sm" style="min-height: 85vh;">
+    <h5 class="text-center mb-4">{% trans "Products Menu" %}</h5>
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'products_list' %}active{% endif %}"
+           href="{% url 'products:products_list' %}">
+          📦 {% trans "Products List" %}
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'new_product' %}active{% endif %}"
+           href="{% url 'products:new_product' %}">
+          ➕ {% trans "Add Product" %}
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          📊 {% trans "Product Reports" %}
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Main content -->
+  <div class="col-md-9 col-lg-10">
+    <div class="card p-4 mt-3 shadow-sm">
+      {% block products_content %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}

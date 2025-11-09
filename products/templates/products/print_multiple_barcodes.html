@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>طباعة باركود - مجموعة منتجات</title>
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      text-align: center;
+      margin: 20px;
+      background: #f9fafb;
+    }
+    h2 {
+      margin-bottom: 25px;
+      color: #333;
+    }
+    .actions {
+      margin-bottom: 25px;
+    }
+    .actions button, .actions a {
+      display: inline-block;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      font-size: 15px;
+      text-decoration: none;
+      cursor: pointer;
+      margin: 0 5px;
+      transition: 0.3s ease;
+    }
+    .actions button:hover, .actions a:hover {
+      background: #0056b3;
+    }
+    .barcode-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 20px;
+      justify-items: center;
+    }
+    .barcode-card {
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 10px;
+      width: 160px;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: 0.2s ease;
+    }
+    .barcode-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .barcode-card img {
+      width: 150px;
+      height: auto;
+    }
+    .barcode-card h4 {
+      font-size: 14px;
+      margin: 5px 0;
+      color: #333;
+    }
+    .price {
+      color: #222;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    @media print {
+      .actions { display: none; }
+      body { margin: 0; background: #fff; }
+    }
+  </style>
+</head>
+<body>
+  <h2>🧾 طباعة باركود لعدة منتجات</h2>
+
+  <div class="actions">
+    <button onclick="window.print()">🖨️ طباعة</button>
+    <a href="{% url 'products:products_list' %}">⬅️ رجوع إلى قائمة المنتجات</a>
+  </div>
+
+  <div class="barcode-grid">
+    {% for item in barcode_data %}
+      <div class="barcode-card">
+        <h4>{{ item.name }}</h4>
+        <p class="price">{{ item.price }} ج.م</p>
+        <img src="/{{ item.path }}" alt="Barcode">
+        <p>{{ item.barcode }}</p>
+      </div>
+    {% endfor %}
+  </div>
+
+</body>
+</html>

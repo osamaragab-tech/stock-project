@@ -1,0 +1,94 @@
+{% extends "inventory/base_inventory.html" %}
+{% load static i18n %}
+
+{% block title %}📦 {% trans "Product Movment" %}{% endblock %}
+
+{% block extra_head %}
+
+<style>
+    body { background: #f8f9fa; font-family: Arial; }
+    .table th { background-color: #0d6efd; color: white; }
+
+    body[dir="rtl"] {
+      direction: rtl;
+      text-align: right;
+    }
+
+    body[dir="rtl"] .table th,
+    body[dir="rtl"] .table td {
+      text-align: right;
+    }
+
+    body[dir="rtl"] .form-select {
+      direction: rtl;
+    }
+
+  </style>
+{% endblock %}
+
+{% block inventory_content %}
+
+  <div class="container py-5">
+    <h2 class="mb-4 text-center">{% trans "Product Movement Report" %}</h2>
+
+    <!-- فلاتر البحث -->
+    <form method="get" class="row g-3 mb-4 bg-white p-3 shadow-sm rounded">
+      <div class="col-md-3">
+        <label class="form-label">{% trans "Start Date" %}</label>
+        <input type="date" name="start_date" value="{{ start_date }}" class="form-control">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">{% trans "End Date" %}</label>
+        <input type="date" name="end_date" value="{{ end_date }}" class="form-control">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">{% trans "Product" %}</label>
+        <select name="product_id" class="form-select">
+          <option value="all">{% trans "All Products" %}</option>
+          {% for p in products %}
+            <option value="{{ p.id }}" {% if product_id|default:"" == p.id|stringformat:"s" %}selected{% endif %}>{{ p.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">{% trans "Filter" %}</button>
+      </div>
+    </form>
+
+    <!-- جدول النتائج -->
+    <div class="table-responsive bg-white shadow-sm rounded">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>{% trans "Product" %}</th>
+            <th>{% trans "First Movement" %}</th>
+            <th>{% trans "Last Movement" %}</th>
+            <th>{% trans "Days" %}</th>
+            <th>{% trans "Total In (Qty)" %}</th>
+            <th>{% trans "Total Out (Qty)" %}</th>
+            <th>{% trans "Net Qty" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in report_data %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ r.product__name }}</td>
+              <td>{{ r.first_date }}</td>
+              <td>{{ r.last_date }}</td>
+              <td>{{ r.days }}</td>
+              <td>{{ r.total_in|default:0 }}</td>
+              <td>{{ r.total_out|default:0 }}</td>
+              <td><strong>{{ r.net_qty }}</strong></td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="8" class="text-center">{% trans "No data found" %}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+
+

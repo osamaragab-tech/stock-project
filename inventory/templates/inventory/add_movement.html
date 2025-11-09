@@ -1,0 +1,16 @@
+{% extends "inventory/base_inventory.html" %}
+{% load i18n %}
+
+
+{% block inventory_content %}
+<div class="container py-4">
+<div class="card p-3">
+<h5>{% trans "Add Stock Movement" %}</h5>
+<form method="post">{% csrf_token %}
+{{ form.as_p }}
+<button class="btn btn-success">{% trans "Save" %}</button>
+<a href="{% url 'inventory:inventory_home' %}" class="btn btn-link">{% trans "Cancel" %}</a>
+</form>
+</div>
+</div>
+{% endblock %}

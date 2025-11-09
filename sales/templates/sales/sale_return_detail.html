@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h4 class="mb-0">Sale Return #{{ sale_return.id }}</h4>
+      <a href="{% url 'sales:new_sale_return' %}" class="btn btn-light btn-sm">+ New Return</a>
+    </div>
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <p><strong>Date:</strong> {{ sale_return.date|date:"Y-m-d H:i" }}</p>
+          {% if sale_return.sale %}
+            <p><strong>Related Invoice:</strong> #{{ sale_return.sale.id }}</p>
+            <p><strong>Customer:</strong> {{ sale_return.sale.customer_name|default:"N/A" }}</p>
+          {% endif %}
+        </div>
+        <div class="col-md-6 text-md-end">
+          <p><strong>Created By:</strong> {{ sale_return.created_by|default:"N/A" }}</p>
+          <p><strong>Created At:</strong> {{ sale_return.created_at|date:"Y-m-d H:i" }}</p>
+        </div>
+      </div>
+
+      <table class="table table-bordered align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Product</th>
+            <th>SKU</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.product.sku }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.price|floatformat:2 }}</td>
+            <td>{{ item.subtotal|floatformat:2 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr class="fw-bold">
+            <td colspan="5" class="text-end">Total</td>
+            <td>{{ total|floatformat:2 }} EGP</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      {% if sale_return.notes %}
+      <div class="mt-4">
+        <strong>Notes:</strong>
+        <p>{{ sale_return.notes }}</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

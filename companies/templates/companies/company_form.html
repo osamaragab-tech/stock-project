@@ -1,0 +1,19 @@
+{% load i18n %}
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4" dir="{% get_current_language_bidi as RTL %}{% if RTL %}rtl{% else %}ltr{% endif %}">
+  <h3 class="fw-bold mb-3">
+    {% if company %}
+      ✏️ {% trans "Edit Company" %}
+    {% else %}
+      🏢 {% trans "Add Company" %}
+    {% endif %}
+  </h3>
+  <form method="post" enctype="multipart/form-data" class="card p-4 shadow-sm">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success mt-3">💾 {% trans "Save" %}</button>
+    <a href="{% url 'companies:company_list' %}" class="btn btn-secondary mt-3">↩️ {% trans "Back" %}</a>
+  </form>
+</div>
+{% endblock %}

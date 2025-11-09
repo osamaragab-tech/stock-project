@@ -1,0 +1,71 @@
+{% extends "inventory/base_inventory.html" %}
+{% load i18n %}
+
+
+{% block inventory_content %}
+<div class="container py-4">
+<div class="d-flex justify-content-between align-items-center mb-3">
+<h3>{% trans "Inventory Dashboard" %}</h3>
+<a href="{% url 'inventory:add_movement' %}" class="btn btn-primary">+ {% trans "Add Movement" %}</a>
+</div>
+
+
+<div class="row g-3">
+<div class="col-lg-8">
+<div class="card p-3 mb-3">
+<h6 class="mb-2">{% trans "Recent Stock Movements" %}</h6>
+<div class="table-responsive">
+<table class="table table-sm">
+<thead>
+<tr><th>{% trans "Date" %}</th><th>{% trans "Product" %}</th><th>{% trans "Type" %}</th><th>{% trans "Qty" %}</th><th>{% trans "Desc" %}</th></tr>
+</thead>
+<tbody>
+{% for m in recent_movements %}
+<tr>
+<td>{{ m.date|date:"Y-m-d H:i" }}</td>
+<td>{{ m.product.name }}</td>
+<td>{{ m.get_movement_type_display }}</td>
+<td>{{ m.quantity }}</td>
+<td>{{ m.description }}</td>
+</tr>
+{% empty %}
+<tr><td colspan="5">{% trans "No movements yet." %}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+
+
+<div class="card p-3">
+<h6 class="mb-2">{% trans "Product quick list" %}</h6>
+<div class="list-group">
+{% for p in products %}
+<div class="list-group-item d-flex justify-content-between align-items-center">
+<div>
+<div class="fw-semibold">{{ p.name }}</div>
+<small class="text-muted">SKU: {{ p.sku }}</small>
+</div>
+<div class="text-end">
+<div>{{ p.on_hand }} {% trans "On hand" %}</div>
+<div class="small text-muted">{{ p.price }} EGP</div>
+</div>
+</div>
+{% endfor %}
+</div>
+</div>
+</div>
+
+
+<div class="col-lg-4">
+<div class="card p-3">
+<h6>{% trans "Actions" %}</h6>
+<a href="{% url 'products:products_list' %}" class="btn btn-outline-primary w-100 mb-2">{% trans "Products" %}</a>
+<a href="{% url 'inventory:movement_report' %}" class="btn btn-outline-secondary w-100">{% trans "Movement Report" %}</a>
+</div>
+</div>
+
+
+</div>
+</div>
+{% endblock %}

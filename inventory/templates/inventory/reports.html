@@ -1,0 +1,171 @@
+{% extends "inventory/base_inventory.html" %}
+{% load static i18n %}
+
+{% block title %}📦 {% trans "reports" %}{% endblock %}
+
+{% block extra_head %}
+
+<style>
+
+      body[dir="rtl"] {
+        direction: rtl;
+        text-align: right;
+      }
+
+      body[dir="rtl"] .table th,
+      body[dir="rtl"] .table td {
+        text-align: right;
+      }
+
+      body[dir="rtl"] .form-select {
+        direction: rtl;
+      }
+
+
+      body {
+        background-color: #f0f2f5;
+        font-family: Arial, sans-serif;
+      }
+
+      .summary-card {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        background: linear-gradient(135deg, #007bff, #00c4ff);
+        color: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 40px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        text-align: center;
+      }
+
+      .summary-item h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        opacity: 0.9;
+      }
+
+      .summary-item p {
+        margin: 8px 0 0;
+        font-size: 1.6rem;
+        font-weight: bold;
+      }
+
+      .table th {
+        background-color: #0d6efd;
+        color: white;
+      }
+
+      .status-healthy {
+        color: green;
+        font-weight: bold;
+      }
+      .status-overstocked {
+        color: orange;
+        font-weight: bold;
+      }
+      .status-low {
+        color: red;
+        font-weight: bold;
+      }
+      .status-idle {
+        color: gray;
+        font-weight: bold;
+      }
+    </style>
+{% endblock %}
+
+
+{% block inventory_content %}
+
+    <div class="container py-5">
+      <!-- 🔹 ملخص التقارير الرئيسية -->
+      <div class="summary-card">
+        <div class="summary-item">
+          <h3>{% trans "Total Inventory Value" %}</h3>
+          <p>{{ total_inventory_value|floatformat:2 }} ج.م</p>
+        </div>
+        <div class="summary-item">
+          <h3>{% trans "Total In" %}</h3>
+          <p>{{ total_in }}</p>
+        </div>
+        <div class="summary-item">
+          <h3>{% trans "Total Out" %}</h3>
+          <p>{{ total_out }}</p>
+        </div>
+      </div>
+
+      <!-- 🔹 تقرير الأداء -->
+      <h1 class="mb-4 text-center">📊 {% trans "Product Performance Reports" %}</h1>
+
+      <div class="mb-3">
+        <form method="get">
+          <label>{% trans "Filter" %}:</label>
+          <select
+            name="status"
+            onchange="this.form.submit()"
+            class="form-select w-auto d-inline-block"
+          >
+            <option value="all" {% if filter_status == 'all' %}selected{% endif %}>
+              {% trans "All" %}
+            </option>
+            <option value="active" {% if filter_status == 'active' %}selected{% endif %}>
+              {% trans "Active" %}
+            </option>
+            <option value="idle" {% if filter_status == 'idle' %}selected{% endif %}>
+              {% trans "Idle" %}
+            </option>
+          </select>
+        </form>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>{% trans "Product" %}</th>
+              <th>{% trans "Category" %}</th>
+              <th>{% trans "Total In" %}</th>
+              <th>{% trans "Total Out" %}</th>
+              <th>{% trans "Current Qty" %}</th>
+              <th>{% trans "Daily Usage" %}</th>
+              <th>{% trans "Status" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in report_data %}
+            <tr
+              class="
+                {% if item.status == _('Healthy') %}status-healthy{% endif %}
+                {% if item.status == _('Overstocked') %}status-overstocked{% endif %}
+                {% if item.status == _('Low Stock, order soon') %}status-low{% endif %}
+                {% if item.status == _('Idle (No sales)') %}status-idle{% endif %}
+              "
+            >
+              <td>{{ forloop.counter }}</td>
+              <td>{{ item.product }}</td>
+              <td>{{ item.category }}</td>
+              <td>{{ item.total_in }}</td>
+              <td>{{ item.total_out }}</td>
+              <td>{{ item.current_quantity }}</td>
+              <td>{{ item.daily_usage }}</td>
+              <td>{{ item.status }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="8" class="text-center text-muted">
+                {% trans "No data available" %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+{% endblock %}
+
+
+

@@ -1,0 +1,106 @@
+{% extends "inventory/base_inventory.html" %}
+{% load static i18n %}
+
+{% block title %}📦 {% trans "Edit Product" %}{% endblock %}
+
+{% block extra_head %}
+
+<style>
+    body {
+      background-color: #f0f2f5;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .edit-container {
+      max-width: 600px;
+      margin: 60px auto;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      padding: 30px 40px;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 25px;
+    }
+    form label {
+      font-weight: 600;
+      margin-top: 10px;
+    }
+    .form-control, .form-select {
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .btn-save {
+      background-color: #0d6efd;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      transition: 0.3s;
+      font-weight: 500;
+    }
+    .btn-save:hover {
+      background-color: #084298;
+    }
+    .btn-cancel {
+      color: #6c757d;
+      margin-left: 10px;
+      text-decoration: none;
+    }
+    .btn-cancel:hover {
+      color: #000;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    body[dir="rtl"] {
+        direction: rtl;
+        text-align: right;
+    }
+
+    body[dir="rtl"] .table th,
+    body[dir="rtl"] .table td {
+        text-align: right;
+    }
+
+    body[dir="rtl"] .form-select {
+        direction: rtl;
+    }
+  </style>
+
+{% endblock %}
+
+{% block inventory_content %}
+<!-- المحتوى السابق هنا -->
+
+  <div class="edit-container">
+    <h2>🛠️ {% trans "Edit Product" %}</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+
+      {% for field in form %}
+        <div class="mb-3">
+          <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <div class="text-danger small">{{ field.errors|join:", " }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <div class="text-center mt-4">
+        <button type="submit" class="btn-save">{% trans "Save Changes" %}</button>
+        <a href="{% url 'inventory:home' %}" class="btn-cancel">{% trans "Cancel" %}</a>
+      </div>
+    </form>
+  </div>
+
+{% endblock %}
+
+

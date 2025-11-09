@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Sales Module" %}{% endblock %}
+
+{% block content %}
+<div class="row">
+  <!-- Sidebar -->
+  <div class="col-md-3 col-lg-2 sidebar p-3">
+    <h5 class="text-center">{% trans "Sales Menu" %}</h5>
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'sales_dashboard' %}active{% endif %}" href="{% url 'sales:sales_dashboard' %}">
+          🧾 {% trans "Dashboard" %}
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'new_sale' %}active{% endif %}" href="{% url 'sales:new_sale' %}">
+          ➕ {% trans "New Invoice" %}
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          📊 {% trans "Sales Reports" %}
+        </a>
+      </li>
+      <!-- ✅ Sale Returns Link -->
+      <li class="nav-item">
+  <a class="nav-link {% if request.resolver_match.url_name == 'sale_returns_list' %}active{% endif %}" href="{% url 'sales:sale_returns_list' %}">
+    📋 {% trans "All Sale Returns" %}
+  </a>
+</li>
+<li class="nav-item">
+  <a class="nav-link {% if request.resolver_match.url_name == 'new_sale_return' %}active{% endif %}" href="{% url 'sales:new_sale_return' %}">
+    ➕ {% trans "New Sale Return" %}
+  </a>
+</li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="col-md-9 col-lg-10">
+    <div class="card p-4 mt-3">
+      {% block sales_content %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}

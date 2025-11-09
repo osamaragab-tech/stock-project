@@ -1,0 +1,204 @@
+{% load static i18n %}
+{% comment %}
+Partial: product_list.html
+Expected context: page_obj, query
+{% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>product_search</title>
+  <style>
+    .stock-status {
+      margin: 6px 0;
+      font-weight: 500;
+    }
+
+    .status {
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    .in-stock {
+      background-color: #d1fae5; /* أخضر فاتح */
+      color: #065f46;
+    }
+
+    .out-stock {
+      background-color: #fee2e2; /* أحمر فاتح */
+      color: #991b1b;
+    }
+
+    /* 🎯 تحسين عرض in / out */
+    .stock-movements {
+      margin-top: 10px;
+      background-color: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 6px 10px;
+      display: flex;
+      justify-content: space-between;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .stock-movements .in-move {
+      color: #065f46;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stock-movements .out-move {
+      color: #991b1b;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .product-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      background: #fff;
+      transition: transform 0.2s ease;
+    }
+
+    .product-card:hover {
+      transform: scale(1.02);
+    }
+
+    .product-img-container img {
+      width: 100%;
+      border-radius: 8px;
+    }
+
+    .product-info {
+      margin-top: 10px;
+    }
+
+    .product-actions {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .edit-btn, .delete-btn {
+      text-decoration: none;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+
+    .edit-btn {
+      background-color: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .delete-btn {
+      background-color: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .low-stock {
+      background-color: #fef9c3;
+      color: #92400e;
+      padding: 3px 6px;
+      border-radius: 6px;
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 0.8rem;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="products-grid" id="product-container">
+  {% for product in page_obj %}
+  <div class="product-card">
+    <div class="product-img-container">
+      {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+      {% else %}
+        <img src="{% static 'placeholder.png' %}" alt="{% trans 'No Image' %}">
+      {% endif %}
+      {% if product.quantity <= 1 %}
+        <span class="low-stock">⚠️ {% trans "Low Stock" %}</span>
+      {% endif %}
+    </div>
+
+    <div class="product-info">
+      <h5>{{ product.name }}</h5>
+      <p>{% trans "SKU" %}: {{ product.sku|default:"-" }}</p>
+      <p>{% trans "Category" %}: {% if product.category %}{{ product.category.name }}{% else %}-{% endif %}</p>
+      <p>{% trans "Price" %}: {{ product.price }} ج.م</p>
+      <p>{% trans "Quantity" %}: {{ product.quantity }}</p>
+
+      <!-- حالة المنتج -->
+      <p class="stock-status">
+        {% if product.quantity > 0 %}
+          <span class="status in-stock">✅ {% trans "In Stock" %}</span>
+        {% else %}
+          <span class="status out-stock">❌ {% trans "Out of Stock" %}</span>
+        {% endif %}
+      </p>
+
+      <!-- 📈 / 📉 عرض الحركات -->
+      <div class="stock-movements">
+        <span class="in-move">📈 In: {{ product.in_total|default:"0" }}</span>
+        <span class="out-move">📉 Out: {{ product.out_total|default:"0" }}</span>
+      </div>
+
+      {% if user.is_authenticated and user.is_superuser %}
+      <div class="product-actions">
+        <a href="{% url 'inventory:edit_product' product.id %}" class="edit-btn">✏️ {% trans "Edit" %}</a>
+        <a href="{% url 'inventory:delete_product' product.id %}" class="delete-btn"onclick='return confirm("{% trans "Are you sure you want to delete?" %}"|escapejs);'>🗑️ {% trans "Delete" %}</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% empty %}
+    <p class="text-center mt-4">{% trans "No products found." %}</p>
+  {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if page_obj.has_other_pages %}
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-center mt-3">
+    {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?q={{ query|urlencode }}&page={{ page_obj.previous_page_number }}">« {% trans "Previous" %}</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">« {% trans "Previous" %}</span></li>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+      {% if num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+        {% if page_obj.number == num %}
+          <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+        {% else %}
+          <li class="page-item">
+            <a class="page-link" href="?q={{ query|urlencode }}&page={{ num }}">{{ num }}</a>
+          </li>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?q={{ query|urlencode }}&page={{ page_obj.next_page_number }}">{% trans "Next" %} »</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">{% trans "Next" %} »</span></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+</body>
+</html>

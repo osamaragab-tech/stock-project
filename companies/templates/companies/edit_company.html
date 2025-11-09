@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Edit Company" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-5 col-lg-6 col-md-8">
+  <div class="card shadow-lg border-0">
+    <div class="card-header bg-warning text-dark fw-bold">
+      ✏️ {% trans "Edit Company" %}
+    </div>
+    <div class="card-body">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+              <div class="text-danger small mt-1">{{ field.errors|join:", " }}</div>
+            {% endif %}
+          </div>
+        {% endfor %}
+        <div class="d-flex justify-content-between mt-4">
+          <a href="{% url 'companies:companies_list' %}" class="btn btn-outline-secondary">
+            ← {% trans "Back" %}
+          </a>
+          <button type="submit" class="btn btn-warning text-dark fw-bold">
+            💾 {% trans "Update" %}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

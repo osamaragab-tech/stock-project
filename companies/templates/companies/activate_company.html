@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Activate Company" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-5 col-lg-6 col-md-8">
+  <div class="card shadow-lg border-0">
+    <div class="card-header bg-success text-white fw-bold">
+      🔄 {% trans "Activate Company" %}
+    </div>
+    <div class="card-body text-center">
+      <p class="lead">
+        {% blocktrans with name=company.name %}
+          Are you sure you want to activate company "{{ name }}" as your current company?
+        {% endblocktrans %}
+      </p>
+      <form method="post">
+        {% csrf_token %}
+        <div class="d-flex justify-content-center gap-3 mt-4">
+          <a href="{% url 'companies:companies_list' %}" class="btn btn-outline-secondary">
+            ← {% trans "Cancel" %}
+          </a>
+          <button type="submit" class="btn btn-success">
+            ✅ {% trans "Activate" %}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
