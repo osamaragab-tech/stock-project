@@ -20,11 +20,18 @@ def signup_view(request):
             messages.error(request, f"❌ Username '{username}' already exists!")
         else:
             user = User.objects.create_user(username=username, email=email, password=password)
-            messages.success(request, f"✅ Account for '{username}' created successfully.")
-            return redirect('login')
+            login(request, user)  # تسجيل الدخول تلقائيًا
+            messages.success(request, f"✅ Welcome {username}, your account was created successfully!")
+            return redirect('inventory:inventory_home')
 
-        lang = get_language()
-        return redirect(f'/{lang}/')
+        # لو فيه خطأ نرجع form مع الرسائل
+        return render(request, 'accounts/signup.html', {
+            'username': username,
+            'email': email,
+        })
+
+    # لو GET
+    return render(request, 'accounts/signup.html')
 
 
 # ===============================
@@ -51,4 +58,4 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     messages.success(request, "✅ You have been logged out.")
-    return redirect('login')
+    return redirect('accounts:login')
