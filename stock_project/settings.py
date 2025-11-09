@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-@_ww-fayi06&byz=k4tmh!sv4@j&3o@32qgf3%tdn4tjnz#%bp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['osamaomar.pythonanywhere.com', 'localhost', '127.0.0.1', '192.168.1.5']
+ALLOWED_HOSTS = ['osamaomar.pythonanywhere.com', 'localhost', '127.0.0.1', '192.168.1.5', '*']
 
 # Application definition
 INSTALLED_APPS = [
@@ -130,3 +130,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# settings.py
+LOGIN_REDIRECT_URL = '/'   # بعد تسجيل الدخول
+LOGOUT_REDIRECT_URL = '/'  # بعد تسجيل الخروج
