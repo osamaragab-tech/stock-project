@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-@_ww-fayi06&byz=k4tmh!sv4@j&3o@32qgf3%tdn4tjnz#%bp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['osamaomar.pythonanywhere.com', 'osamaomar.pythonanywhere.com/stock_project', 'localhost', '127.0.0.1', '192.168.1.5']
+ALLOWED_HOSTS = ['osamaomar.pythonanywhere.com', 'osamaomar.pythonanywhere.com/stock-project', 'localhost', '127.0.0.1', '192.168.1.5']
 
 # Application definition
 INSTALLED_APPS = [
@@ -121,11 +121,11 @@ LOCALE_PATHS = [
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
-STATIC_URL = '/static/'
+STATIC_URL = '/static/stock-project/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Media files
-MEDIA_URL = '/media/'
+MEDIA_URL = '/media/stock-project/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
