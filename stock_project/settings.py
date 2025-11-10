@@ -5,8 +5,8 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-@_ww-fayi06&byz=k4tmh!sv4@j&3o@32qgf3%tdn4tjnz#%bp'
-DEBUG = False
-ALLOWED_HOSTS = ['osamaomar.pythonanywhere.com']
+DEBUG = True
+ALLOWED_HOSTS = ['osamaomar.pythonanywhere.com', '127.0.0.1', 'localhost']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
